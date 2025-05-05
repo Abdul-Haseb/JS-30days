@@ -1,75 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>JS + CSS Clock</title>
-  <link rel="icon" href="https://fav.farm/🔥" />
-</head>
-<body>
-
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
     <div class="clock">
       <div class="clock-face">
+        <!-- The three clock hands -->
         <div class="hand hour-hand"></div>
         <div class="hand min-hand"></div>
         <div class="hand second-hand"></div>
       </div>
     </div>
-
-
-  <style>
-    html {
-      background: #018DED url(https://unsplash.it/1500/1000?image=881&blur=5);
-      background-size: cover;
-      font-family: 'helvetica neue';
-      text-align: center;
-      font-size: 10px;
-    }
-
-    body {
-      margin: 0;
-      font-size: 2rem;
-      display: flex;
-      flex: 1;
-      min-height: 100vh;
-      align-items: center;
-    }
-
-    .clock {
-      width: 30rem;
-      height: 30rem;
-      border: 20px solid white;
-      border-radius: 50%;
-      margin: 50px auto;
-      position: relative;
-      padding: 2rem;
-      box-shadow:
-        0 0 0 4px rgba(0,0,0,0.1),
-        inset 0 0 0 3px #EFEFEF,
-        inset 0 0 10px black,
-        0 0 10px rgba(0,0,0,0.2);
-    }
-
-    .clock-face {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transform: translateY(-3px); /* account for the height of the clock hands */
-    }
-
-    .hand {
-      width: 50%;
-      height: 6px;
-      background: black;
-      position: absolute;
-      top: 50%;
-    }
-
-  </style>
-
-  <script>
-
-
-  </script>
-</body>
+  </body>
 </html>
+
+<style>
+  body {
+    margin: 0;
+    font-size: 2rem;
+    display: flex;
+    flex: 1;
+    min-height: 100vh; /* or 100dvh if you prefer */
+    align-items: center;
+    justify-content: center;
+    background: black
+      url("https://plus.unsplash.com/premium_photo-1698920493649-b7293aaf547d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8bGFwdG9wJTIwd2FsbHBhcGVyJTIwYmxhY2t8ZW58MHx8MHx8fDA%3D")
+      no-repeat center center;
+    background-size: cover;
+    font-family: "helvetica neue";
+    text-align: center;
+    width: 100vw; /* Changed from 100vh */
+  }
+  /* ============== CLOCK CONTAINER ============== */
+  .clock {
+    width: 30rem; /* Set clock width */
+    height: 30rem; /* Set clock height */
+    border: 20px solid white; /* Add a thick white border */
+    border-radius: 50%; /* Make it a circle */
+    margin: 50px auto; /* Center it horizontally */
+    position: relative; /* Allows positioning of inner elements */
+    padding: 2rem; /* Optional padding inside */
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5); /* Add shadow effect */
+  }
+
+  /* ============== CLOCK FACE ============== */
+  .clock-face {
+    position: relative; /* Needed so hands can be placed absolutely inside */
+    width: 100%;
+    height: 100%;
+    transform: translateY(-3px); /* Fixes slight visual glitch */
+  }
+
+  /* ============== CLOCK HANDS ============== */
+  .hand {
+    width: 50%; /* Half the clock size */
+    height: 6px; /* Thickness of the hand */
+    position: absolute; /* Place on top of clock face */
+    top: 50%; /* Start at center vertically */
+    transform-origin: 100%; /* Rotate around the end of the hand */
+    transform: rotate(90deg); /* Initial position pointing up */
+    transition: all 0.05s; /* Smooth animation */
+    transition-timing-function: ease-in-out; /* Easing for smoothness */
+  }
+
+  .min-hand {
+    background: yellow;
+  }
+
+  .second-hand {
+    background-color: red;
+  }
+
+  .hour-hand {
+    background-color: rgb(202, 183, 183);
+  }
+</style>
+
+<script>
+  // ============================
+  // SELECT CLOCK HAND ELEMENTS
+  // ============================
+  const secondDiv = document.querySelector(".second-hand");
+  const minutesDiv = document.querySelector(".min-hand");
+  const hourDiv = document.querySelector(".hour-hand");
+
+  // ============================
+  // FUNCTION TO UPDATE THE CLOCK
+  // ============================
+  const Time = () => {
+    const now = new Date(); // Get the current time
+
+    const seconds = now.getSeconds(); // Get seconds (0-59)
+    const minutes = now.getMinutes(); // Get minutes (0-59)
+    const hours = now.getHours(); // Get hours (0-23)
+
+    // ===============================
+    // CALCULATE DEGREES FOR EACH HAND
+    // ===============================
+    const secondsDeg = (seconds / 60) * 360 + 90; // +90 to adjust starting position
+    const minutesDeg = (minutes / 60) * 360 + 90;
+    const hoursDeg = (hours / 12) * 360 + 90;
+
+    // ===============================
+    // ROTATE EACH HAND TO THE DEGREE
+    // ===============================
+    secondDiv.style.transform = `rotate(${secondsDeg}deg)`;
+    minutesDiv.style.transform = `rotate(${minutesDeg}deg)`;
+    hourDiv.style.transform = `rotate(${hoursDeg}deg)`;
+
+    // ============================================
+    // PREVENT HANDS FROM JUMPING BACK TO 0 DEGREE
+    // ============================================
+    // When the seconds hand hits 0, we remove the transition to avoid a "spin back" effect.
+    secondDiv.style.transition = seconds === 0 ? "none" : "all 0.05s";
+    minutesDiv.style.transition = minutes === 0 ? "none" : "all 0.05s";
+    hourDiv.style.transition = hours === 0 ? "none" : "all 0.05s";
+  };
+
+  // ============================
+  // RUN THE CLOCK EVERY SECOND
+  // ============================
+  setInterval(Time, 1000); // Update the clock hands every 1000ms (1 second)
+  Time(); // Run once immediately so it starts right away
+
+  /* =================================================
+ OPTIONAL: SMOOTHER MOVEMENT (KEEP FOR FUTURE STUDY)
+ This version makes the hour & minute hands move smoothly
+ based on seconds, not just jump once every full minute/hour.
+
+ const minsDegrees = (mins / 60) * 360 + (seconds / 60) * 6 + 90;
+ const hourDegrees = (hour / 12) * 360 + (mins / 60) * 30 + 90;
+
+ This way, the minute hand also moves a bit each second, and the hour hand moves gradually.
+================================================= */
+</script>
